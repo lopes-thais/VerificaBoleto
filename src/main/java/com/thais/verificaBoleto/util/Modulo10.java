@@ -15,15 +15,15 @@ public class Modulo10 {
         return campo1 && campo2 && campo3;
     }
 
-    private boolean validarCampo(int[] campo, int dvCampo) {
+    private boolean validarCampo(String campo, int dvCampo) {
         
         int soma = 0;
         
-        for(int i = 0; i < campo.length; i++) {
+        for(int i = campo.length() - 1; i >= 0; i--) {
 
-            int numero = campo[i];
+            int numero = Character.getNumericValue(campo.charAt(i));
 
-            if (i % 2 == 0){
+            if ((campo.length() - 1 - i) % 2 == 0){
                 numero *= 2;
 
                 if (numero > 9) {
@@ -44,7 +44,6 @@ public class Modulo10 {
             dvCalculado = 0;
         }
 
-        return dvCalculado == dvCampo; 
- 
+        return dvCalculado == dvCampo;
     }
 }
