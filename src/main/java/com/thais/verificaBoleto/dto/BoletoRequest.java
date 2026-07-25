@@ -13,24 +13,31 @@ public class BoletoRequest {
     public String getLinhaDigitavel() {
         return linhaDigitavel;
     }
+
     public void setLinhaDigitavel(String linhaDigitavel) {
         this.linhaDigitavel = linhaDigitavel;
     }
+
     public LocalDate getDataVencimento() {
         return dataVencimento;
     }
+
     public void setDataVencimento(LocalDate dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
+
     public BigDecimal getValor() {
         return valor;
     }
+
     public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
+
     public String getBanco() {
         return banco;
     }
+
     public void setBanco(String banco) {
         this.banco = banco;
     }  
