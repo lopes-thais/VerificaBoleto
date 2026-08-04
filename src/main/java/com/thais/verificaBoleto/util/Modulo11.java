@@ -6,9 +6,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class Modulo11 {
 
+    private final MontadorCodigoBarras montadorCodigoBarras;
+
+    public Modulo11(MontadorCodigoBarras montadorCodigoBarras) {
+        this.montadorCodigoBarras = montadorCodigoBarras;
+    }
+
     public boolean validarCodigo(LinhaParseada linhaParseada){
 
-        String codigo = linhaParseada.getCodigoBarras();
+        String codigo = montadorCodigoBarras.montarCodigoBarras(
+                linhaParseada.getBanco(),
+                linhaParseada.getMoeda(),
+                linhaParseada.getCampo1Livre(),
+                linhaParseada.getCampo2(),
+                linhaParseada.getCampo3(),
+                linhaParseada.getValorString(),
+                linhaParseada.getDataExtraida()
+        );
+
         int dvInformado = linhaParseada.getDvGeral();
 
         int dvCalculado = calcularDv(codigo);

@@ -5,7 +5,6 @@ import java.util.List;
 public class BoletoResponse {
     
     private String status;
-    private int score;
     private List<VerificacaoResponse> verificacoes;
 
     public String getStatus() {
@@ -14,14 +13,6 @@ public class BoletoResponse {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
     }
 
     public List<VerificacaoResponse> getVerificacoes() {

@@ -1,6 +1,7 @@
 package com.thais.verificaBoleto.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class LinhaParseada {
 
@@ -19,8 +20,11 @@ public class LinhaParseada {
     private BigDecimal valor;
 
     private int dvGeral;
-    private int fatorVencimento;
+    private LocalDate vencimento;
     private int moeda;
+
+    private String valorString;
+    private String dataExtraida;
 
     private String codigoBarras;
     
@@ -90,12 +94,12 @@ public class LinhaParseada {
         this.banco = banco;
     }
 
-    public int getFatorVencimento() {
-        return fatorVencimento;
+    public LocalDate getVencimento() {
+        return vencimento;
     }
 
-    public void setFatorVencimento(int fatorVencimento) {
-        this.fatorVencimento = fatorVencimento;
+    public void setVencimento(LocalDate vencimento) {
+        this.vencimento = vencimento;
     }
 
     public BigDecimal getValor() {
@@ -129,4 +133,21 @@ public class LinhaParseada {
     public String getCampo1Livre(){
         return campo1Livre;
     }
+
+    public String getValorString() {
+        return valorString;
+    }
+
+    public void setValorString(String valorString) {
+        this.valorString = valorString;
+    }
+
+    public String getDataExtraida() {
+        return dataExtraida;
+    }
+
+    public void setDataExtraida(String dataExtraida) {
+        this.dataExtraida = dataExtraida;
+    }
+
 }

@@ -17,13 +17,20 @@ public class ExtratorDadosPdf {
     public DadosPdf extrair (String texto){
 
         String linhaDigitavel = extrairLinhaDigitavel(texto);
+        List<LocalDate> datas = extrairDatas(texto);
+        List<BigDecimal> valores = extrairValores(texto);
+        String banco = null;
+
+        if (linhaDigitavel != null && linhaDigitavel.length() >= 3) {
+            banco = linhaDigitavel.substring(0, 3);
+        }
 
         DadosPdf dados = new DadosPdf();
 
         dados.setLinhaDigitavel(linhaDigitavel);
-
-        List<LocalDate> datas = extrairDatas(texto);
-        List<BigDecimal> valores = extrairValores(texto);
+        dados.setDatasEncontradas(datas);
+        dados.setValoresEncontrados(valores);
+        dados.setBanco(banco);
 
         return dados;
     }
@@ -69,7 +76,7 @@ public class ExtratorDadosPdf {
             datas.add(data);
 
         }
-
+        System.out.println("Datas encontradas: " + datas) ;
         return datas;
     }
 
@@ -92,7 +99,7 @@ public class ExtratorDadosPdf {
 
             valores.add(valorBD);
         }
-
+        System.out.println("Valores encontrados: " + valores);
         return valores;
     }
 
