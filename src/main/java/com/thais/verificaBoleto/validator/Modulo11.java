@@ -1,4 +1,4 @@
-package com.thais.verificaBoleto.util;
+package com.thais.verificaBoleto.validator;
 
 import com.thais.verificaBoleto.dto.LinhaParseada;
 import org.springframework.stereotype.Component;

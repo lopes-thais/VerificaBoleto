@@ -6,6 +6,7 @@ public class VerificacaoResponse {
     private String valorInformado;
     private String valorExtraido;
     private boolean ok;
+    private String mensagem;
 
     public String getCampo() {
         return campo;
@@ -37,5 +38,13 @@ public class VerificacaoResponse {
 
     public void setOk(boolean ok) {
         this.ok = ok;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
+    public String getMensagem(){
+        return mensagem;
     }
 }

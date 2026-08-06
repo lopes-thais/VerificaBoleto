@@ -1,13 +1,13 @@
 package com.thais.verificaBoleto.service;
 
-import com.thais.verificaBoleto.dto.BoletoRequest;
-import com.thais.verificaBoleto.dto.DadosPdf;
-import com.thais.verificaBoleto.dto.LinhaParseada;
-import com.thais.verificaBoleto.dto.VerificacaoResponse;
+import com.thais.verificaBoleto.dto.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,31 +15,98 @@ public class ComparadorService {
 
     public List<VerificacaoResponse> compararDadosInformados(LinhaParseada linha, BoletoRequest request){
 
-        VerificacaoResponse banco = new VerificacaoResponse();
+       List<VerificacaoResponse> verificacoes = new ArrayList<>();
 
-        // comparar banco, valores e data
-        banco.setCampo("Banco: ");
-        banco.setValorInformado(request.getBanco());
-        banco.setValorExtraido(linha.getBanco());
-        banco.setOk(compararBancos(request.getBanco(), linha.getBanco()));
+       VerificacaoResponse banco = (criarVerificacao("Banco", request.getBanco(), linha.getBanco(),
+                                        compararBancos(request.getBanco(), linha.getBanco())));
 
-        return banco;
+       if(!compararBancos(request.getBanco(), linha.getBanco())){
+           banco.setMensagem("Banco informado diferente do banco na linha digitável.");
+       }
+
+       verificacoes.add(banco);
+
+       VerificacaoResponse valor = (criarVerificacao("Valor", request.getValor().toString(), linha.getValor().toString(),
+                compararValores(request.getValor(), linha.getValor())));
+
+       BigDecimal diferenca = request.getValor().subtract(linha.getValor()).abs();
+       String diferencaFormatada = diferenca.setScale(2, RoundingMode.HALF_UP).toString();
+
+       if(diferenca.compareTo(BigDecimal.ZERO) != 0){
+           valor.setMensagem(
+                   "Foi encontrada uma divergência de R$" + diferencaFormatada + " no valor do boleto."
+           );
+       }
+
+       verificacoes.add(valor);
+
+       VerificacaoResponse vencimento = criarVerificacao("Vencimento", request.getDataVencimento().toString(), linha.getVencimento().toString(),
+                compararDatas(request.getDataVencimento(), linha.getVencimento()));
+
+       if (verificarToleranciaData(linha.getVencimento(), request.getDataVencimento())) {
+            vencimento.setMensagem(
+                    "A data difere em 1 dia, mas foi considerada válida."
+            );
+       }
+
+       verificacoes.add(vencimento);
+       return verificacoes;
     }
 
-    public ComparacaoResponse compararDadosPdf(LinhaParseada linha, DadosPdf dadosPdf){
+    public List<VerificacaoResponse> compararDadosPdf(LinhaParseada linha, DadosPdf dadosPdf){
 
-        ComparacaoResponse resultado = new ComparacaoResponse();
+        List<VerificacaoResponse> verificacoes = new ArrayList<>();
+        BoletoResponse mensagem = new BoletoResponse();
 
-        // comparar banco, valores e datas
-        resultado.setBancoOk(compararBancos(dadosPdf.getBanco(), linha.getBanco()));
-        resultado.setValoresOk(compararValoresExtraidos(dadosPdf.getValoresEncontrados(), linha.getValor()));
-        resultado.setDataOk(compararDatasExtraidas(dadosPdf.getDatasEncontradas(), linha.getVencimento()));
+        BigDecimal valorEncontrado = encontrarValor(
+                dadosPdf.getValoresEncontrados(),
+                linha.getValor()
+        );
 
-        return resultado;
+        LocalDate dataEncontrada = encontrarData(
+                dadosPdf.getDatasEncontradas(), linha.getVencimento()
+        );
+
+        verificacoes.add(criarVerificacao("Banco", linha.getBanco(), dadosPdf.getBanco(),
+                compararBancos(linha.getBanco(), dadosPdf.getBanco())));
+
+        verificacoes.add(criarVerificacao(
+                "Valor",
+                linha.getValor().toString(),
+                valorEncontrado != null ? valorEncontrado.toString() : "Não encontrado",
+                valorEncontrado != null
+        ));
+
+        VerificacaoResponse vencimento = criarVerificacao(
+                "Vencimento",
+                linha.getVencimento().toString(),
+                dataEncontrada != null ? dataEncontrada.toString() : "Não encontrado",
+                dataEncontrada != null
+        );
+
+        if (verificarToleranciaData(linha.getVencimento(), dataEncontrada)) {
+            vencimento.setMensagem(
+                    "A data difere em 1 dia, mas foi considerada válida."
+            );
+        }
+
+        verificacoes.add(vencimento);
+
+        return verificacoes;
     }
 
+    // Métodos para comparação dos dados
     private boolean compararDatas(LocalDate dataInfo, LocalDate dataExtraida){
-        return dataInfo.equals(dataExtraida);
+
+        if (dataInfo == null || dataExtraida == null) {
+            return false;
+        }
+
+        long diferenca = Math.abs(
+                ChronoUnit.DAYS.between(dataInfo, dataExtraida)
+        );
+
+        return diferenca <= 1;
     }
 
     private boolean compararValores(BigDecimal valorInfo, BigDecimal valorExtraido){
@@ -47,32 +114,64 @@ public class ComparadorService {
     }
 
     private boolean compararBancos(String bancoInfo, String bancoExtraido){
+
         return bancoInfo.equals(bancoExtraido);
     }
 
-    // Métodos para comparação dos dados em lista extraidos do boleto em PDF
-    private boolean compararDatasExtraidas(List<LocalDate> datasLista, LocalDate dataLinha){
+    // Métodos para procurar na lista a data correspondente à linha digitável
+    private LocalDate encontrarData(List<LocalDate> datasLista, LocalDate dataLinha){
 
         // Para cada data na lista de datas, compare com a data extraida da linha
         for (LocalDate data : datasLista) {
 
-            if (data.equals(dataLinha)) {
-                return true;
+            long diferenca = Math.abs(
+                    ChronoUnit.DAYS.between(data, dataLinha)
+            );
+
+            if (diferenca <= 1) {
+                return data;
             }
         }
-        return false;
+        return null;
+
     }
 
-    // Métodos para comparação dos dados em lista extraidos do boleto em PDF
-    private boolean compararValoresExtraidos(List<BigDecimal> listaValores, BigDecimal valorLinha){
+    public boolean verificarToleranciaData(LocalDate dataLinha, LocalDate dataEncontrada) {
 
-        // Para cada valor na lista de valores, compare com o valor extraido da linha
+        if (dataLinha == null || dataEncontrada == null) {
+            return false;
+        }
+
+        long diferenca = Math.abs(
+                ChronoUnit.DAYS.between(dataLinha, dataEncontrada)
+        );
+
+        return diferenca == 1;
+    }
+
+    // Métodos para comparar os valores em lista extraidos e encontrar o da linah no boleto em PDF
+
+    private BigDecimal encontrarValor(List<BigDecimal> listaValores, BigDecimal valorLinha) {
+
         for (BigDecimal valor : listaValores) {
-
             if (valor.compareTo(valorLinha) == 0) {
-                return true;
+                return valor;
             }
         }
-        return false;
+
+        return null;
+    }
+
+    private VerificacaoResponse criarVerificacao(String campo, String valorInformado,
+                                                 String valorExtraido, boolean ok){
+
+        VerificacaoResponse verificacao = new VerificacaoResponse();
+
+        verificacao.setCampo(campo);
+        verificacao.setValorInformado(valorInformado);
+        verificacao.setValorExtraido(valorExtraido);
+        verificacao.setOk(ok);
+
+        return verificacao;
     }
 }

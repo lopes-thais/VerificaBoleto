@@ -50,11 +50,8 @@ public class ExtratorDadosPdf {
             // Retorna a linha encontrada tirando pontos e espaços
             String linha = matcher.group().replaceAll("\\D", "");
 
-            System.out.println("Linha encontrada: " + linha);
             return linha;
         }
-
-        System.out.println("Nenhuma linha encontrada");
 
         return null;
     }
@@ -76,7 +73,7 @@ public class ExtratorDadosPdf {
             datas.add(data);
 
         }
-        System.out.println("Datas encontradas: " + datas) ;
+
         return datas;
     }
 
@@ -99,7 +96,7 @@ public class ExtratorDadosPdf {
 
             valores.add(valorBD);
         }
-        System.out.println("Valores encontrados: " + valores);
+
         return valores;
     }
 

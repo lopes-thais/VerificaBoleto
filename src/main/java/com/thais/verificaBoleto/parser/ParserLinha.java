@@ -9,19 +9,21 @@ import java.time.LocalDate;
 public class ParserLinha {
 
     public LinhaParseada extrairCampos(String linha){
- 
-        linha = linha.replaceAll("\\D", ""); // Remove tudo o que não for dígito
-        
-        // Verificar se a linha tem o tamanho correto
-        if (linha.length() != 47) {
-            throw new IllegalArgumentException("Linha digitável inválida - Possui menos que 47 dígitos.");
 
-        } else if (linha == null || linha.isBlank()) { // Verifica se a linha digitável é nula ou vazia
+        if (linha == null || linha.isBlank()) { // Verifica se a linha digitável é nula ou vazia
             throw new IllegalArgumentException("Linha digitável inválida - Linha dígitavél nula ou vazia.");
 
         } else if (!linha.matches("\\d{47}")) { // Verifica se a linha digitável contém apenas dígitos
             throw new IllegalArgumentException("Linha digitável inválida - Linha dígitável com caracteres inválidos.");
         }
+
+        // Verificar se a linha tem o tamanho correto
+        if (linha.length() != 47) {
+            throw new IllegalArgumentException("Linha digitável inválida - Possui menos que 47 dígitos.");
+
+        }
+
+        linha = linha.replaceAll("\\D", ""); // Remove tudo o que não for dígito
 
         String campo1 = linha.substring(0, 9);
         int dvCampo1 = Character.getNumericValue(linha.charAt(9));

@@ -31,20 +31,14 @@ public class BoletoController {
     
     public BoletoResponse verificar(@RequestBody BoletoRequest request) {
 
-        System.out.println(request.getLinhaDigitavel());
-        System.out.println(request.getValor());
-
         return boletoService.verificar(request);
     }
 
     @PostMapping("/pdf")
-    public ResponseEntity<String> testarPdf(@RequestParam("application") MultipartFile application)
+    public BoletoResponse verificarPdf(@RequestParam("application") MultipartFile application)
             throws IOException {
 
-        String texto = pdfService.extrairTexto(application);
-        DadosPdf dados = extratorDadosPdf.extrair(texto);
-
-        return ResponseEntity.ok(texto);
-        //return ResponseEntity.ok(dados.toString());
+        return boletoService.verificarPdf(application);
+        
     }
 }
