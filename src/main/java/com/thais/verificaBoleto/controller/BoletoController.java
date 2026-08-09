@@ -1,8 +1,9 @@
 package com.thais.verificaBoleto.controller;
 
-import com.thais.verificaBoleto.dto.DadosPdf;
+import com.thais.verificaBoleto.enums.StatusVerificacao;
 import com.thais.verificaBoleto.parser.ExtratorDadosPdf;
 import com.thais.verificaBoleto.service.PdfService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,17 +29,27 @@ public class BoletoController {
     }
 
     @PostMapping("/verificar")
-    
-    public BoletoResponse verificar(@RequestBody BoletoRequest request) {
+    public ResponseEntity<BoletoResponse> verificar(@Valid @RequestBody BoletoRequest request) {
+        BoletoResponse response = boletoService.verificar(request);
 
-        return boletoService.verificar(request);
+        if (response.getStatus() == StatusVerificacao.INVALIDO) {
+            return ResponseEntity.badRequest().body(response); // status 400
+        }
+
+        return ResponseEntity.ok(response); // status 200
     }
 
     @PostMapping("/pdf")
-    public BoletoResponse verificarPdf(@RequestParam("application") MultipartFile application)
+    public ResponseEntity<BoletoResponse> verificarPdf(@RequestParam("application") MultipartFile application)
             throws IOException {
 
-        return boletoService.verificarPdf(application);
+        BoletoResponse response = boletoService.verificarPdf(application);
+
+        if (response.getStatus() == StatusVerificacao.INVALIDO) {
+            return ResponseEntity.badRequest().body(response); // status 400
+        }
+
+        return ResponseEntity.ok(response);
         
     }
 }

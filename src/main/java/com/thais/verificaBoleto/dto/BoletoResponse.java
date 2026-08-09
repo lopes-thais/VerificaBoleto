@@ -1,17 +1,20 @@
 package com.thais.verificaBoleto.dto;
 
+import com.thais.verificaBoleto.enums.StatusVerificacao;
+
 import java.util.List;
 
 public class BoletoResponse {
-    
-    private String status;
-    private List<VerificacaoResponse> verificacoes;
 
-    public String getStatus() {
+    private List<VerificacaoResponse> verificacoes;
+    private StatusVerificacao status;
+    private String mensagem;
+
+    public StatusVerificacao getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusVerificacao status) {
         this.status = status;
     }
 
@@ -23,4 +26,11 @@ public class BoletoResponse {
         this.verificacoes = verificacoes;
     }
 
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
 }

@@ -1,6 +1,7 @@
 package com.thais.verificaBoleto.service;
 
 import com.thais.verificaBoleto.dto.*;
+import com.thais.verificaBoleto.enums.StatusVerificacao;
 import com.thais.verificaBoleto.parser.ExtratorDadosPdf;
 import com.thais.verificaBoleto.parser.ParserLinha;
 import com.thais.verificaBoleto.validator.Modulo10;
@@ -9,11 +10,15 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
 @Service
 public class BoletoService {
+
+    private static final Logger log = LoggerFactory.getLogger(BoletoService.class);
 
     private final PdfService pdfService;
     private final ExtratorDadosPdf extratorDadosPdf;
@@ -36,47 +41,41 @@ public class BoletoService {
     }
 
     public BoletoResponse verificar(BoletoRequest request) {
+        log.info("Iniciando a verificação do boleto via linha digitável.");
 
         String linha = request.getLinhaDigitavel(); // Obtém a linha digitável do objeto BoletoRequest
         BoletoResponse response = new BoletoResponse(); // Cria um novo objeto BoletoResponse para armazenar a resposta
+       
+        LinhaParseada dadosLinha = parserLinha.extrairCampos(linha);
 
-        if (linha == null || linha.isBlank()) {
-            response.setStatus("Linha digitável em branco.");
+        boolean modulo10Valido = modulo10.validar(dadosLinha);
+        boolean modulo11Valido = modulo11.validarCodigo(dadosLinha);
+
+        if (!modulo10Valido || !modulo11Valido) {
+
+            log.warn("Linha digitável com divergência nos Módulos 10/11.");
+            response.setStatus(StatusVerificacao.INVALIDO);
+            response.setMensagem(StatusVerificacao.INVALIDO.getDescricao());
+
             return response;
         }
 
-        try {
-            LinhaParseada dadosLinha = parserLinha.extrairCampos(linha);
+        List<VerificacaoResponse> verificacoes = comparadorService.compararDadosInformados(dadosLinha, request);
 
-            boolean modulo10Valido = modulo10.validar(dadosLinha);
-            boolean modulo11Valido = modulo11.validarCodigo(dadosLinha);
+        response.setVerificacoes(verificacoes);
 
-            if (!modulo10Valido || !modulo11Valido) {
-                response.setStatus("Linha digitável matematicamente inválida!");
+        boolean tudoOk = verificacoes.stream().allMatch(VerificacaoResponse::isOk);
+        response.setStatus(tudoOk ? StatusVerificacao.CONSISTENTE : StatusVerificacao.INCONSISTENTE);
 
-                return response;
-            }
-
-            List<VerificacaoResponse> verificacoes =
-                    comparadorService.compararDadosInformados(dadosLinha, request);
-
-            response.setVerificacoes(verificacoes);
-
-            boolean tudoOk = verificacoes.stream()
-                    .allMatch(VerificacaoResponse::isOk);
-
-            response.setStatus(tudoOk ? "Dados consistentes" : "Suspeito");
-
-        }catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                response.setStatus(e.getMessage());
-                return response;
-        }
+        StatusVerificacao statusFinal = tudoOk ? StatusVerificacao.CONSISTENTE : StatusVerificacao.INCONSISTENTE;
+        response.setStatus(statusFinal);
+        response.setMensagem(statusFinal.getDescricao());
 
         return response;
     }
 
     public BoletoResponse verificarPdf(MultipartFile arquivo) throws IOException {
+        log.info("Iniciando a verificação do boleto via PDF.");
 
         BoletoResponse response = new BoletoResponse();
 
@@ -84,34 +83,34 @@ public class BoletoService {
         DadosPdf dadosPdf = extratorDadosPdf.extrair(texto);
         String linha = dadosPdf.getLinhaDigitavel();
 
+        if(dadosPdf.getLinhaDigitavel() == null){
+            throw new IllegalArgumentException("Não foi possível encontrar uma linha digitável.");
+        }
+
         LinhaParseada dadosLinha = parserLinha.extrairCampos(linha);
 
         boolean modulo10Valido = modulo10.validar(dadosLinha);
         boolean modulo11Valido = modulo11.validarCodigo(dadosLinha);
 
-        try {
-            if (!modulo10Valido || !modulo11Valido) {
-                response.setStatus("Linha digitável matematicamente inválida!");
-                return response;
-            }
+        if (!modulo10Valido || !modulo11Valido) {
 
-            response.setVerificacoes(
-                    comparadorService.compararDadosPdf(dadosLinha, dadosPdf)
-            );
+            log.warn("(PDF) Linha digitável com divergência nos Módulos 10/11.");
 
-            List<VerificacaoResponse> verificacoes =
-                    comparadorService.compararDadosPdf(dadosLinha, dadosPdf);
+            response.setStatus(StatusVerificacao.INVALIDO);
+            response.setMensagem(StatusVerificacao.INVALIDO.getDescricao());
 
-            boolean tudoOk = verificacoes.stream()
-                    .allMatch(VerificacaoResponse::isOk);
-
-            response.setStatus(tudoOk ? "Dados consistentes" : "Suspeito");
-
-        }catch(IllegalArgumentException e) {
-            e.printStackTrace();
-            response.setStatus(e.getMessage());
             return response;
         }
+
+        List<VerificacaoResponse> verificacoes = comparadorService.compararDadosPdf(dadosLinha, dadosPdf);
+        response.setVerificacoes(verificacoes);
+
+        boolean tudoOk = verificacoes.stream().allMatch(VerificacaoResponse::isOk);
+        response.setStatus(tudoOk ? StatusVerificacao.CONSISTENTE : StatusVerificacao.INCONSISTENTE);
+
+        StatusVerificacao statusFinal = tudoOk ? StatusVerificacao.CONSISTENTE : StatusVerificacao.INCONSISTENTE;
+        response.setStatus(statusFinal);
+        response.setMensagem(statusFinal.getDescricao());
 
         return response;
     }

@@ -47,6 +47,11 @@ public class ComparadorService {
             vencimento.setMensagem(
                     "A data difere em 1 dia, mas foi considerada válida."
             );
+
+       } else if(!verificarToleranciaData(linha.getVencimento(), request.getDataVencimento())){
+
+           vencimento.setMensagem("O vencimento informado é divergente do cadastrado na linha digitável.");
+
        }
 
        verificacoes.add(vencimento);
