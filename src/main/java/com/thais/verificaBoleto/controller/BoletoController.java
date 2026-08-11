@@ -1,5 +1,6 @@
 package com.thais.verificaBoleto.controller;
 
+import com.thais.verificaBoleto.dto.DadosPdf;
 import com.thais.verificaBoleto.enums.StatusVerificacao;
 import com.thais.verificaBoleto.parser.ExtratorDadosPdf;
 import com.thais.verificaBoleto.service.PdfService;
@@ -13,8 +14,10 @@ import com.thais.verificaBoleto.service.BoletoService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/boleto")
 public class BoletoController {
 
@@ -51,5 +54,21 @@ public class BoletoController {
 
         return ResponseEntity.ok(response);
         
+    }
+
+    @PostMapping("/pdf/extrair")
+    public ResponseEntity<?> extrairDados(@RequestParam("arquivo") MultipartFile arquivo) throws IOException {
+        String texto = pdfService.extrairTexto(arquivo);
+        DadosPdf dados = extratorDadosPdf.extrair(texto);
+
+        if (dados.getLinhaDigitavel() == null) {
+            throw new IllegalArgumentException("Não foi possível encontrar uma linha digitável no PDF.");
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "linhaDigitavel", dados.getLinhaDigitavel(),
+                "valoresEncontrados", dados.getValoresEncontrados().size(),
+                "datasEncontradas", dados.getDatasEncontradas().size()
+        ));
     }
 }

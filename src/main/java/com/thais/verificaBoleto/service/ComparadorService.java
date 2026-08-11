@@ -1,6 +1,7 @@
 package com.thais.verificaBoleto.service;
 
 import com.thais.verificaBoleto.dto.*;
+import com.thais.verificaBoleto.enums.Banco;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,8 +18,24 @@ public class ComparadorService {
 
        List<VerificacaoResponse> verificacoes = new ArrayList<>();
 
-       VerificacaoResponse banco = (criarVerificacao("Banco", request.getBanco(), linha.getBanco(),
-                                        compararBancos(request.getBanco(), linha.getBanco())));
+        Banco bancoInformado = Banco.encontrarPorCodigo(request.getBanco());
+        Banco bancoExtraido = Banco.encontrarPorCodigo(linha.getBanco());
+
+        String nomeBancoInformado =
+                bancoInformado != null ? bancoInformado.getCodigoNome() : "Banco desconhecido";
+
+        String nomeBancoExtraido =
+                bancoExtraido != null ? bancoExtraido.getCodigoNome() : "Banco desconhecido";
+
+       VerificacaoResponse banco = (
+
+               criarVerificacao(
+                       "Banco",
+                       nomeBancoInformado,
+                       nomeBancoExtraido,
+                       compararBancos(request.getBanco(), linha.getBanco())
+               )
+       );
 
        if(!compararBancos(request.getBanco(), linha.getBanco())){
            banco.setMensagem("Banco informado diferente do banco na linha digitável.");
@@ -61,7 +78,7 @@ public class ComparadorService {
     public List<VerificacaoResponse> compararDadosPdf(LinhaParseada linha, DadosPdf dadosPdf){
 
         List<VerificacaoResponse> verificacoes = new ArrayList<>();
-        BoletoResponse mensagem = new BoletoResponse();
+        //BoletoResponse mensagem = new BoletoResponse();
 
         BigDecimal valorEncontrado = encontrarValor(
                 dadosPdf.getValoresEncontrados(),
@@ -72,7 +89,19 @@ public class ComparadorService {
                 dadosPdf.getDatasEncontradas(), linha.getVencimento()
         );
 
-        verificacoes.add(criarVerificacao("Banco", linha.getBanco(), dadosPdf.getBanco(),
+        Banco bancoInformado = Banco.encontrarPorCodigo(dadosPdf.getBanco());
+        Banco bancoExtraido = Banco.encontrarPorCodigo(linha.getBanco());
+
+        String nomeBancoInformado =
+                bancoInformado != null ? bancoInformado.getCodigoNome() : "Banco desconhecido";
+
+        String nomeBancoExtraido =
+                bancoExtraido != null ? bancoExtraido.getCodigoNome() : "Banco desconhecido";
+
+        verificacoes.add(criarVerificacao(
+                "Banco",
+                nomeBancoInformado,
+                nomeBancoExtraido,
                 compararBancos(linha.getBanco(), dadosPdf.getBanco())));
 
         verificacoes.add(criarVerificacao(
