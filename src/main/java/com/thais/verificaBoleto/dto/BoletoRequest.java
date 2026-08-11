@@ -3,16 +3,19 @@ package com.thais.verificaBoleto.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class BoletoRequest {
 
+    @Schema(description ="Linha digitável do boleto, com 47 dígitos numéricos" , example = "00190000090262656000400000000000100000000000000")
     @NotBlank(message = "A linha digitável não pode estar em branco.")
     @Pattern(regexp = "\\d{47}", message = "A linha digitável deve possuir 47 digitos numéricos.")
     private String linhaDigitavel;
 
+    @Schema(description = "Data de vencimento do boleto", example = "2026-01-01")
     @NotNull(message = "O campo data de vencimento não pode estar em branco.")
     private LocalDate dataVencimento;
 
