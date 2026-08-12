@@ -1,4 +1,4 @@
-# Boleto Verify
+# VerificaBoleto
 ## O problema
 
 Segundo dados do G1, entre 2024 e 2025 cerca de 24 milhões de pessoas foram vítima de golpes envolvendo boletos bancários ou pix. 
