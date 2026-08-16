@@ -93,12 +93,4 @@ public class BoletoController {
                 "datasEncontradas", dados.getDatasEncontradas().size()
         ));
     }
-
-
-    @GetMapping("/")
-    public ResponseEntity<String> home() {
-
-        return ResponseEntity.ok("Verifica Boleto API está no ar. Acesse https://verificaboleto-m9zt.onrender.com/swagger-ui/index.html para a documentação.");
-
-    }
 }

@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
     @GetMapping("/")
     public ResponseEntity<String> home() {
-        return ResponseEntity.ok("Verifica Boleto API está no ar. Acesse /swagger-ui/index.html para a documentação.");
+        return ResponseEntity.ok("Verifica Boleto API está no ar. Acesse https://verificaboleto-m9zt.onrender.com/swagger-ui/index.html para a documentação.");
     }
 }
