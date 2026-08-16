@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,5 +82,19 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
+
+    // Captura erro de Recurso Não Encontrado
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ProblemaErroResponse> tratarRecursoNaoEncontrado(NoResourceFoundException e) {
+        log.warn("Recurso não encontrado: {}", e.getMessage());
+
+        ProblemaErroResponse erro = new ProblemaErroResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "O recurso solicitado não existe nesta API.",
+                List.of(e.getMessage())
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 }
