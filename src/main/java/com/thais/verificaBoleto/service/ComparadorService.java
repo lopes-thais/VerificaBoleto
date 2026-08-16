@@ -60,16 +60,17 @@ public class ComparadorService {
        VerificacaoResponse vencimento = criarVerificacao("Vencimento", request.getDataVencimento().toString(), linha.getVencimento().toString(),
                 compararDatas(request.getDataVencimento(), linha.getVencimento()));
 
-       if (verificarToleranciaData(linha.getVencimento(), request.getDataVencimento())) {
-            vencimento.setMensagem(
-                    "A data difere em 1 dia, mas foi considerada válida."
-            );
+        long diference = Math.abs(ChronoUnit.DAYS.between(request.getDataVencimento(), linha.getVencimento()));
 
-       } else if(!verificarToleranciaData(linha.getVencimento(), request.getDataVencimento())){
+        if (diference == 0) {
+            vencimento.setMensagem("Não há divergência entre as datas de vencimento."); // datas iguais, sem necessidade de mensagem
 
-           vencimento.setMensagem("O vencimento informado é divergente do cadastrado na linha digitável.");
+        } else if (diference == 1) {
+            vencimento.setMensagem("A data difere em 1 dia, mas foi considerada válida.");
 
-       }
+        } else {
+            vencimento.setMensagem("Datas informada diferente da cadastrada na linha digitável.");
+        }
 
        verificacoes.add(vencimento);
        return verificacoes;
@@ -118,10 +119,9 @@ public class ComparadorService {
                 dataEncontrada != null
         );
 
-        if (verificarToleranciaData(linha.getVencimento(), dataEncontrada)) {
-            vencimento.setMensagem(
-                    "A data difere em 1 dia, mas foi considerada válida."
-            );
+        String mensagemVencimento = verificarToleranciaData(linha.getVencimento(), dataEncontrada);
+        if (mensagemVencimento != null) {
+            vencimento.setMensagem(mensagemVencimento);
         }
 
         verificacoes.add(vencimento);
@@ -170,17 +170,21 @@ public class ComparadorService {
 
     }
 
-    public boolean verificarToleranciaData(LocalDate dataLinha, LocalDate dataEncontrada) {
+    public String verificarToleranciaData(LocalDate dataLinha, LocalDate dataComparada) {
 
-        if (dataLinha == null || dataEncontrada == null) {
-            return false;
+        if (dataComparada == null) {
+            return "Não foi possível localizar uma data de vencimento correspondente.";
         }
 
-        long diferenca = Math.abs(
-                ChronoUnit.DAYS.between(dataLinha, dataEncontrada)
-        );
+        long diferenca = Math.abs(ChronoUnit.DAYS.between(dataLinha, dataComparada));
 
-        return diferenca == 1;
+        if (diferenca == 0) {
+            return null; // datas iguais, sem necessidade de mensagem
+        } else if (diferenca == 1) {
+            return "A data difere em 1 dia, mas foi considerada válida.";
+        } else {
+            return "Datas de vencimento divergentes.";
+        }
     }
 
     // Métodos para comparar os valores em lista extraidos e encontrar o da linah no boleto em PDF
@@ -205,6 +209,10 @@ public class ComparadorService {
         verificacao.setValorInformado(valorInformado);
         verificacao.setValorExtraido(valorExtraido);
         verificacao.setOk(ok);
+
+        if (ok) {
+            verificacao.setMensagem("Sem divergências.");
+        }
 
         return verificacao;
     }
