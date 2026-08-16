@@ -71,5 +71,5 @@ A API do Boleto Verify é documentada utilizando Swagger/OpenAPI, permitindo vis
 
 A documentação pode ser acessada em:
 
-[Swagger UI](http://localhost:8081/swagger-ui/index.html#/)
+[[Swagger UI](http://localhost:8081/swagger-ui/index.html#/)](https://verificaboleto-m9zt.onrender.com/swagger-ui/index.html)
 
