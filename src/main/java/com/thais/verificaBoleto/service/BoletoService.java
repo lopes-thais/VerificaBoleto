@@ -37,7 +37,6 @@ public class BoletoService {
         this.modulo10 = modulo10;
         this.modulo11 = modulo11;
         this.comparadorService = comparadorService;
-
     }
 
     public BoletoResponse verificar(BoletoRequest request) {
@@ -114,5 +113,4 @@ public class BoletoService {
 
         return response;
     }
-
 }

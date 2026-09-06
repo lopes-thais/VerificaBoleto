@@ -40,7 +40,6 @@ public enum Banco {
                 return banco;
             }
         }
-
         return null;
     }
 }

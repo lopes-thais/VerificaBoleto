@@ -55,7 +55,6 @@ public class Modulo11 {
         if((dvCalc == 0) || (dvCalc == 1) || (dvCalc == 10) || (dvCalc == 11)){
             dvCalc = 1;
         }
-
         return dvCalc;
     }
 }

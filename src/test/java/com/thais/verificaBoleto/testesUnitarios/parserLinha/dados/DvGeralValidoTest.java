@@ -10,6 +10,7 @@ public class DvGeralValidoTest {
 
     @Test
     void deveRetornarCampoDvValido() {
+
         ParserLinha parser = new ParserLinha();
         String linha = "34191758501122298325275048415000371100002138842";
         LinhaParseada resultado = parser.extrairCampos(linha);

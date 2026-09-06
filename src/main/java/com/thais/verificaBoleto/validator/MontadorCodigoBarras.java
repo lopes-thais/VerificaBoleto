@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 public class MontadorCodigoBarras {
 
     // Transformar a linha digitável em código de barras, sem o DV geral para utilização no Módulo 11
-
     public String montarCodigoBarras(String banco, int moeda, String campo1Livre,
                                       String campo2, String campo3, String valorString, String fatorString){
 
@@ -16,7 +15,6 @@ public class MontadorCodigoBarras {
         if(codigoBarras.length() != 43){
             throw new IllegalArgumentException("Código de barras inválido");
         }
-
         return codigoBarras;
     }
 }

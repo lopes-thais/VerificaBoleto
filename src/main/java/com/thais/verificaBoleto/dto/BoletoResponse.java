@@ -1,7 +1,6 @@
 package com.thais.verificaBoleto.dto;
 
 import com.thais.verificaBoleto.enums.StatusVerificacao;
-
 import java.util.List;
 
 public class BoletoResponse {

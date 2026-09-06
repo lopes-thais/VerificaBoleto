@@ -17,7 +17,6 @@ public class PdfService {
         if(application.isEmpty()){
             throw new IllegalArgumentException("Arquivo PDF vazio.");
         }
-
         if(!"application/pdf".equals(application.getContentType())){
             throw new IllegalArgumentException("O arquivo enviado não é um PDF.");
         }
@@ -25,13 +24,11 @@ public class PdfService {
         try (PDDocument document = Loader.loadPDF(application.getBytes())){ // Recebe o arquivo PDF
 
             PDFTextStripper stripper = new PDFTextStripper(); // Extrai todo o texto do arquivo
-
             String texto = stripper.getText(document);
 
             if(texto == null || texto.isBlank()){
                 throw new IllegalArgumentException("Não foi possível extrair o texto do PDF enviado.");
             }
-
             return texto;
         }
     }

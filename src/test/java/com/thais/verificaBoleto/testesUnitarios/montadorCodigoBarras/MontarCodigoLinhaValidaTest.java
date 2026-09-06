@@ -10,6 +10,7 @@ public class MontarCodigoLinhaValidaTest {
 
     @Test
     void deveMontarCodigoCorretamente(){
+
         MontadorCodigoBarras montador = new MontadorCodigoBarras();
 
         String codigo = montador.montarCodigoBarras(

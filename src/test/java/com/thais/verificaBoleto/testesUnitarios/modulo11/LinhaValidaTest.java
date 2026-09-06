@@ -18,7 +18,6 @@ public class LinhaValidaTest {
         ParserLinha parser = new ParserLinha();
 
         String linha = "34191758501122983252750484150003711000021388423";
-
         LinhaParseada linhaParseada = parser.extrairCampos(linha);
 
         boolean resultado = modulo11.validarCodigo(linhaParseada);

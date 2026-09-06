@@ -21,7 +21,6 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // Captura IllegalArgumentException (ex: linha inválida ou malformatada)
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ProblemaErroResponse> tratarErroValidacao (IllegalArgumentException e){
         log.warn("Tentativa de verificação com dados inválidos: {}", e.getMessage());
@@ -31,13 +30,10 @@ public class GlobalExceptionHandler {
                 e.getMessage(),
                 List.of(e.getMessage())
         );
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
-
     }
 
     // Captura erros de validação das anotações @Valid no DTO
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ProblemaErroResponse> tratarErrosDTO (MethodArgumentNotValidException e){
         List<String> erros = e.getBindingResult().getFieldErrors().stream()
@@ -51,7 +47,6 @@ public class GlobalExceptionHandler {
                 "Erro de validação nos campos informados.",
                 erros
         );
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
 
@@ -66,7 +61,6 @@ public class GlobalExceptionHandler {
                 "Ocorreu um erro interno ao processar a verificação do boleto.",
                 List.of(e.getMessage())
         );
-
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
     }
 
@@ -80,7 +74,6 @@ public class GlobalExceptionHandler {
                 "O campo da requisição contém um JSON mal formatado ou campos com formatos inválidos (ex. datas)",
                 List.of("Verifique se as datas estão no formato correto (YYYY/MM/DD) e a sintaxe do json.")
         );
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
 
@@ -94,7 +87,6 @@ public class GlobalExceptionHandler {
                 "O recurso solicitado não existe nesta API.",
                 List.of(e.getMessage())
         );
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 }

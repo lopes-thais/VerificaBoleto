@@ -5,8 +5,7 @@ import java.time.LocalDate;
 
 public class LinhaParseada {
 
-    // Classe para armazennar os campos extraídos da linha digitável do boleto e demais dados extraidos
-
+    // Armazena os campos extraídos da linha digitável do boleto e demais dados extraidos
     private String campo1;
     private String campo2;
     private String campo3;

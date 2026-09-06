@@ -20,7 +20,6 @@ public class ParserLinha {
         // Verificar se a linha tem o tamanho correto
         if (linha.length() != 47) {
             throw new IllegalArgumentException("Linha digitável inválida - Possui menos que 47 dígitos.");
-
         }
 
         linha = linha.replaceAll("\\D", ""); // Remove tudo o que não for dígito
@@ -71,7 +70,6 @@ public class ParserLinha {
         camposParse.setValorString(valorString);
 
         return camposParse;
-
     }
 
     // Método para transformar o fator vencimento em data
@@ -84,9 +82,7 @@ public class ParserLinha {
 
         int fatorBase = 1000;
         int dias = fatorVencimento - fatorBase;
-        LocalDate vencimentoExtraido = dataBase.plusDays(dias);
 
-        return vencimentoExtraido;
-
+        return dataBase.plusDays(dias);
     }
 }

@@ -8,8 +8,10 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ValorValidoTest {
+
     @Test
     void deveRetornarCampoValorCorreto() {
+
         ParserLinha parser = new ParserLinha();
         String linha = "34191758501122298325275048415000371100002138842";
         LinhaParseada resultado = parser.extrairCampos(linha);

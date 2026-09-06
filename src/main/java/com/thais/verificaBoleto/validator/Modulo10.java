@@ -43,7 +43,6 @@ public class Modulo10 {
         if(dvCalculado == 10){
             dvCalculado = 0;
         }
-
         return dvCalculado == dvCampo;
     }
 }

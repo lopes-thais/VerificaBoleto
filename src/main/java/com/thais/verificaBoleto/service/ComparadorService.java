@@ -139,7 +139,6 @@ public class ComparadorService {
         long diferenca = Math.abs(
                 ChronoUnit.DAYS.between(dataInfo, dataExtraida)
         );
-
         return diferenca <= 1;
     }
 
@@ -148,7 +147,6 @@ public class ComparadorService {
     }
 
     private boolean compararBancos(String bancoInfo, String bancoExtraido){
-
         return bancoInfo.equals(bancoExtraido);
     }
 
@@ -167,7 +165,6 @@ public class ComparadorService {
             }
         }
         return null;
-
     }
 
     public String verificarToleranciaData(LocalDate dataLinha, LocalDate dataComparada) {
@@ -196,7 +193,6 @@ public class ComparadorService {
                 return valor;
             }
         }
-
         return null;
     }
 
@@ -213,7 +209,6 @@ public class ComparadorService {
         if (ok) {
             verificacao.setMensagem("Sem divergências.");
         }
-
         return verificacao;
     }
 }

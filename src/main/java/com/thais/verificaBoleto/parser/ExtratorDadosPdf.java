@@ -52,7 +52,6 @@ public class ExtratorDadosPdf {
 
             return linha;
         }
-
         return null;
     }
 
@@ -73,7 +72,6 @@ public class ExtratorDadosPdf {
             datas.add(data);
 
         }
-
         return datas;
     }
 
@@ -96,8 +94,6 @@ public class ExtratorDadosPdf {
 
             valores.add(valorBD);
         }
-
         return valores;
     }
-
 }

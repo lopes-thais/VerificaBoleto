@@ -16,6 +16,5 @@ public class OpenApiConfig {
                 .description("API para validação de coerência de boletos bancários via linha digitável, "
                         + "usando os módulos 10 e 11 e extração dos dados cadastrados na linha digitável.")
         );
-
     }
 }

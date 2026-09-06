@@ -8,8 +8,10 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataVencimentoValidaTest {
+
     @Test
     void deveRetornarCampos() {
+
         ParserLinha parser = new ParserLinha();
         String linha = "34191758501122298325275048415000371100002138842";
         LinhaParseada resultado = parser.extrairCampos(linha);

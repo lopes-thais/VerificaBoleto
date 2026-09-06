@@ -48,6 +48,5 @@ public class ConsistentePdfTest {
         assertEquals(3, resultado.size());
 
         assertTrue(resultado.stream().allMatch(VerificacaoResponse::isOk));
-
     }
 }

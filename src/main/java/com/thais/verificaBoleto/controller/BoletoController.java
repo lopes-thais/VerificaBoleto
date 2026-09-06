@@ -52,7 +52,6 @@ public class BoletoController {
         if (response.getStatus() == StatusVerificacao.INVALIDO) {
             return ResponseEntity.badRequest().body(response); // status 400
         }
-
         return ResponseEntity.ok(response); // status 200
     }
 
@@ -73,9 +72,7 @@ public class BoletoController {
         if (response.getStatus() == StatusVerificacao.INVALIDO) {
             return ResponseEntity.badRequest().body(response); // status 400
         }
-
         return ResponseEntity.ok(response);
-        
     }
 
     @PostMapping(value = "/pdf/extrair", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

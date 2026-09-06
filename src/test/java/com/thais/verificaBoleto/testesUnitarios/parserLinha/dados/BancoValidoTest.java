@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BancoValidoTest {
+
     @Test
     void deveRetornarCampoBancoCorreto() {
+
         ParserLinha parser = new ParserLinha();
         String linha = "34191758501120955252750484150003715210000213884";
         LinhaParseada resultado = parser.extrairCampos(linha);
