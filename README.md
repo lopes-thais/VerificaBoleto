@@ -7,6 +7,8 @@ pelo usuário e os dados extraídos do documento.
 ![Java](https://img.shields.io/badge/Java_21-red?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/SPRING_BOOT_4.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&labelColor=7DBFF2&logo=docker&logoColor=white)
+![JUnit 5](https://img.shields.io/badge/JUnit_5_Tests-25A162?style=for-the-badge&logo=junit5&logoColor=white)
+![SLF4J Logging](https://img.shields.io/badge/SLF4J_Logging-00599C?style=for-the-badge&logo=logstash&logoColor=white)
 
 ## O problema
 
@@ -73,6 +75,8 @@ Além disso, são apresentados os campos divergentes identificados durante a an�
 * Exibição dinâmica dos resultados da análise;
 * Comparação visual entre dados informados e dados extraídos;
 * Exibição comparativa dos dados divergentes;
+* Rastreabilidade e Observabilidade: Logs estruturados com `SLF4J/Logback` 
+para acompanhamento de cada etapa do fluxo de verificação e alertas de erros.
 
 ## Como executar 
 
@@ -116,8 +120,12 @@ execução e separa as responsabilidades de build e runtime.
 ## Como utilizar
 
 Acesse a documentação Swagger em:
+
 http://localhost:8081/swagger-ui/index.html
-ou https://verificaboleto-m9zt.onrender.com/swagger-ui/index.html
+
+ou 
+
+https://verificaboleto-m9zt.onrender.com/swagger-ui/index.html
 
 ### Enviando os dados manualmente
 
@@ -145,7 +153,6 @@ Anexe o arquivo e clique em executar.
 ### Exemplo de resultado esperado
 
 ````bash
-	
 Response body
 {
   "mensagem": "Dados do boleto consistentes com a linha digitável.",
@@ -176,6 +183,58 @@ Response body
 }
 ````
 
+## Suíte de Testes Unitários
+
+A qualidade e a integridade matemática do sistema são garantidas por uma suíte completa de **testes unitários com JUnit 5**, seguindo as convenções de execução do **Maven Surefire Plugin**.
+
+### Cobertura e estrutura dos testes
+
+Os testes cobrem tanto os cenários felizes (*happy path*) quanto os cenários de divergência, erro de digitação e validação de margem de tolerância financeira:
+
+```text
+src/test/java/com/thais/verificaBoleto/testesUnitarios/
+├── modulo10/
+│   ├── LinhaValidaTest.java                # Validação do DV dos campos 1, 2 e 3
+│   └── LinhaInvalidaTest.java              # Captura de erro em DVs incorretos
+├── modulo11/   
+│   ├── LinhaValidaTest.java                # Cálculo do DV Geral do código de barras (43 dígitos)
+│   └── LinhaInvalidaTest.java              # Rejeição de DV Geral inconsistente
+├── montadorCodigoBarras/   
+│   ├── MontarCodigoLinhaValidaTest.java   
+│   └── MontarCodigoLinhaInvalidaTest.java
+├── parserLinha/   
+│   ├── campos/                             # Parsing dos campos isolados (Campo 1, 2 e 3)
+│   ├── dados/                              # Extração dos dados banco, valor, vencimento e moeda
+│   └── linha/                              # Tratamento de linhas com menos dígitos ou caracteres
+└── comparadorService/   
+    ├── ConsistenteManualTest.java          # Validação de dados informados sem divergência
+    ├── InconsistenteManualTest.java        # Identificação de divergência em valores/vencimento
+    ├── ConsistentePdfTest.java             # Comparação bem-sucedida dos dados extraídos via PDF
+    └── InconsistentePdfTest.java           # Alertas de discrepância entre PDF e Linha Digitável
+```
+
+### Como executar os Testes Unitários
+
+Para executar a suíte completa de testes via terminal:
+
+```bash
+./mvnw test
+```
+
+### Exemplo de output esperado no terminal
+
+```bash
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.thais.verificaBoleto.testesUnitarios.modulo10.LinhaValidaTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+...
+[INFO] -------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] -------------------------------------------------------
+```
+
 ## Diagrama de Arquitetura
 A aplicação é estruturada em uma arquitetura baseada em uma API REST
 desenvolvida com Java e Spring Boot, integrada a um front-end responsável
@@ -189,7 +248,7 @@ pela interação com o usuário.
 ## Estrutura de pastas 
 
 
-```
+```text
 VerificaBoleto/
 ├── src/main/java/com/thais/verificaBoleto/
 │   ├── config/
@@ -252,10 +311,10 @@ O verificaBoleto não verifica ou valida:
   o tratamento de resultados de validação;
 - Implementação de uma regra de tolerância para divergências de até um dia
   na data de vencimento.
+- Implementação de logging estruturado com `SLF4J` nos serviços principais (`BoletoService`, `PdfService`).
 
 ## Melhorias Futuras
 
-- Testes automatizados.
 - Verificação de contas de concessionária (linha digitável com 48 dígitos).
 - Implementação de um parser mais robusto para identificar, na String
   extraída do PDF, os valores associados aos campos "Vencimento" e
