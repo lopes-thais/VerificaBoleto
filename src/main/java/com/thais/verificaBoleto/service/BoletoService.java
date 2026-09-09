@@ -1,5 +1,7 @@
 package com.thais.verificaBoleto.service;
 
+import com.thais.verificaBoleto.agentePdf.dto.AgenteResponse;
+import com.thais.verificaBoleto.agentePdf.service.AgenteService;
 import com.thais.verificaBoleto.dto.*;
 import com.thais.verificaBoleto.enums.StatusVerificacao;
 import com.thais.verificaBoleto.parser.ExtratorDadosPdf;
@@ -26,10 +28,11 @@ public class BoletoService {
     private final Modulo10 modulo10;
     private final Modulo11 modulo11;
     private final ComparadorService comparadorService;
+    private final AgenteService agenteService;
 
     public BoletoService(PdfService pdfService, ExtratorDadosPdf extratorDadosPdf,
                          ParserLinha parserLinha, Modulo10 modulo10, Modulo11 modulo11,
-                         ComparadorService comparadorService) {
+                         ComparadorService comparadorService, AgenteService agenteService) {
 
         this.pdfService = pdfService;
         this.extratorDadosPdf = extratorDadosPdf;
@@ -37,6 +40,7 @@ public class BoletoService {
         this.modulo10 = modulo10;
         this.modulo11 = modulo11;
         this.comparadorService = comparadorService;
+        this.agenteService = agenteService;
     }
 
     public BoletoResponse verificar(BoletoRequest request) {
@@ -73,12 +77,18 @@ public class BoletoService {
         return response;
     }
 
-    public BoletoResponse verificarPdf(MultipartFile arquivo) throws IOException {
+    public BoletoResponse verificarPdf(MultipartFile arquivo) {
         log.info("Iniciando a verificação do boleto via PDF.");
 
         BoletoResponse response = new BoletoResponse();
+        String texto;
 
-        String texto = pdfService.extrairTexto(arquivo);
+        try {
+           texto = pdfService.extrairTexto(arquivo);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Não foi possível processar o arquivo PDF enviado.", e);
+        }
+
         DadosPdf dadosPdf = extratorDadosPdf.extrair(texto);
         String linha = dadosPdf.getLinhaDigitavel();
 
@@ -87,6 +97,7 @@ public class BoletoService {
         }
 
         LinhaParseada dadosLinha = parserLinha.extrairCampos(linha);
+        AgenteResponse dadosAgente = agenteService.analisarTrechos(texto);
 
         boolean modulo10Valido = modulo10.validar(dadosLinha);
         boolean modulo11Valido = modulo11.validarCodigo(dadosLinha);
@@ -101,7 +112,7 @@ public class BoletoService {
             return response;
         }
 
-        List<VerificacaoResponse> verificacoes = comparadorService.compararDadosPdf(dadosLinha, dadosPdf);
+        List<VerificacaoResponse> verificacoes = comparadorService.compararDadosPdf(dadosLinha, dadosPdf, dadosAgente);
         response.setVerificacoes(verificacoes);
 
         boolean tudoOk = verificacoes.stream().allMatch(VerificacaoResponse::isOk);

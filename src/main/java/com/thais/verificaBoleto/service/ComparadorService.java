@@ -1,7 +1,10 @@
 package com.thais.verificaBoleto.service;
 
+import com.thais.verificaBoleto.agentePdf.dto.AgenteResponse;
 import com.thais.verificaBoleto.dto.*;
 import com.thais.verificaBoleto.enums.Banco;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,6 +16,8 @@ import java.util.List;
 
 @Service
 public class ComparadorService {
+
+    private static final Logger log = LoggerFactory.getLogger(ComparadorService.class);
 
     public List<VerificacaoResponse> compararDadosInformados(LinhaParseada linha, BoletoRequest request){
 
@@ -76,19 +81,28 @@ public class ComparadorService {
        return verificacoes;
     }
 
-    public List<VerificacaoResponse> compararDadosPdf(LinhaParseada linha, DadosPdf dadosPdf){
+    public List<VerificacaoResponse> compararDadosPdf(LinhaParseada linha, DadosPdf dadosPdf, AgenteResponse dadosAgente){
 
         List<VerificacaoResponse> verificacoes = new ArrayList<>();
-        //BoletoResponse mensagem = new BoletoResponse();
 
-        BigDecimal valorEncontrado = encontrarValor(
-                dadosPdf.getValoresEncontrados(),
-                linha.getValor()
-        );
+        boolean valorAgente = dadosAgente != null && dadosAgente.valor() != null;
+        boolean dataAgente = dadosAgente != null && dadosAgente.data() != null;
 
-        LocalDate dataEncontrada = encontrarData(
-                dadosPdf.getDatasEncontradas(), linha.getVencimento()
-        );
+        log.info("Agente achou valor?{}", String.valueOf(valorAgente));
+        log.info("Agente achou a data?{}", String.valueOf(dataAgente));
+
+        BigDecimal valorEncontrado = valorAgente
+                ? dadosAgente.valor()
+                : encontrarValor(dadosPdf.getValoresEncontrados(), linha.getValor());
+
+        LocalDate dataEncontrada = dataAgente
+                ? dadosAgente.data()
+                : encontrarData(dadosPdf.getDatasEncontradas(), linha.getVencimento());
+
+        boolean valorOk = valorEncontrado != null && compararValores(linha.getValor(), valorEncontrado);
+        boolean dataOk = dataEncontrada != null && compararDatas(linha.getVencimento(), dataEncontrada);
+
+
 
         Banco bancoInformado = Banco.encontrarPorCodigo(dadosPdf.getBanco());
         Banco bancoExtraido = Banco.encontrarPorCodigo(linha.getBanco());
@@ -107,16 +121,16 @@ public class ComparadorService {
 
         verificacoes.add(criarVerificacao(
                 "Valor",
-                linha.getValor().toString(),
                 valorEncontrado != null ? valorEncontrado.toString() : "Não encontrado",
-                valorEncontrado != null
+                linha.getValor().toString(),
+                valorOk
         ));
 
         VerificacaoResponse vencimento = criarVerificacao(
                 "Vencimento",
-                linha.getVencimento().toString(),
                 dataEncontrada != null ? dataEncontrada.toString() : "Não encontrado",
-                dataEncontrada != null
+                linha.getVencimento().toString(),
+                dataOk
         );
 
         String mensagemVencimento = verificarToleranciaData(linha.getVencimento(), dataEncontrada);

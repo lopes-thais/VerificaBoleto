@@ -64,8 +64,7 @@ public class BoletoController {
             @ApiResponse(responseCode = "400", description = "PDF inválido ou linha digitável não encontrada")
     })
     @PostMapping(value = "/pdf" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BoletoResponse> verificarPdf(@RequestParam("arquivo") MultipartFile application)
-            throws IOException {
+    public ResponseEntity<BoletoResponse> verificarPdf(@RequestParam("arquivo") MultipartFile application) {
 
         BoletoResponse response = boletoService.verificarPdf(application);
 
@@ -76,7 +75,7 @@ public class BoletoController {
     }
 
     @PostMapping(value = "/pdf/extrair", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> extrairDados(@RequestParam("arquivo") MultipartFile arquivo) throws IOException {
+    public ResponseEntity<?> extrairDados(@RequestParam("arquivo") MultipartFile arquivo) throws IOException{
         String texto = pdfService.extrairTexto(arquivo);
         DadosPdf dados = extratorDadosPdf.extrair(texto);
 

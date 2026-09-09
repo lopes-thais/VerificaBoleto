@@ -24,7 +24,7 @@ public class LinhaValidaTest {
              campo 1  DV   campo 2   DV   campo 3   DV   restante
          */
 
-        String linha = "34191758501120955252750484150003715210000213884";
+        String linha = "34191790010104351004791020150008800000000150000";
         LinhaParseada parseada = parser.extrairCampos(linha);
 
         boolean resultado = modulo10.validar(parseada);

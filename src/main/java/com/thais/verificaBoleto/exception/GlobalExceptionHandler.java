@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,5 +89,18 @@ public class GlobalExceptionHandler {
                 List.of(e.getMessage())
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+    }
+
+    // Captura erro de processamento de arquivo PDF
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ProblemaErroResponse> tratarErroLeituraArquivo(IOException e) {
+        log.warn("Erro ao processar o arquivo PDF enviado: {}", e.getMessage());
+
+        ProblemaErroResponse erro = new ProblemaErroResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Não foi possível processar o arquivo PDF enviado.",
+                List.of(e.getMessage())
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
 }

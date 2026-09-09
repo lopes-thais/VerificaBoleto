@@ -14,7 +14,7 @@ public class LinhaInvalidaTest {
         Modulo10 modulo10 = new Modulo10();
         ParserLinha parser = new ParserLinha();
 
-        String linha = "34191738521120955673096238450003715210000213884"; // Linha inválida
+        String linha = "34191790010104351004791020150008800000000150000"; // Linha inválida
         LinhaParseada parseada = parser.extrairCampos(linha);
 
         boolean resultado = modulo10.validar(parseada);

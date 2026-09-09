@@ -1,5 +1,6 @@
 package com.thais.verificaBoleto.testesUnitarios.comparadorService;
 
+import com.thais.verificaBoleto.agentePdf.dto.AgenteResponse;
 import com.thais.verificaBoleto.dto.DadosPdf;
 import com.thais.verificaBoleto.dto.LinhaParseada;
 import com.thais.verificaBoleto.dto.VerificacaoResponse;
@@ -41,7 +42,12 @@ public class InconsistentePdfTest {
         pdf.setDatasEncontradas(datasPdf);
         pdf.setBanco("033");
 
-        List<VerificacaoResponse> resultado = comparar.compararDadosPdf(linha, pdf);
+        AgenteResponse agente = new AgenteResponse(
+                LocalDate.of(2026, 7, 28),   // data que o agente "encontrou"
+                new BigDecimal("2138.84")   // valor que o agente "encontrou"
+        );
+
+        List<VerificacaoResponse> resultado = comparar.compararDadosPdf(linha, pdf, agente);
 
         assertNotNull(resultado);
         assertEquals(3, resultado.size());
