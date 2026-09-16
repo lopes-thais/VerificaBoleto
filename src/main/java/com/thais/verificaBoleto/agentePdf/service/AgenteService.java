@@ -23,7 +23,7 @@ public class AgenteService {
 
     private static final Pattern PATTERN_DATA = Pattern.compile("\\d{2}[/. ]\\d{2}[/. ]\\d{4}");
     private static final Pattern PATTERN_VALOR = Pattern.compile("(?:R\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d{2}");
-    private static final int MARGEM_CONTEXTO = 15;
+    private static final int MARGEM_CONTEXTO = 25;
 
     public AgenteService(ExtracaoTrechos extratorTrechos, GeminiClient agente) {
         this.extratorTrechos = extratorTrechos;

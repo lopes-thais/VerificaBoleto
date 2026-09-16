@@ -102,8 +102,6 @@ public class ComparadorService {
         boolean valorOk = valorEncontrado != null && compararValores(linha.getValor(), valorEncontrado);
         boolean dataOk = dataEncontrada != null && compararDatas(linha.getVencimento(), dataEncontrada);
 
-
-
         Banco bancoInformado = Banco.encontrarPorCodigo(dadosPdf.getBanco());
         Banco bancoExtraido = Banco.encontrarPorCodigo(linha.getBanco());
 
@@ -119,12 +117,27 @@ public class ComparadorService {
                 nomeBancoExtraido,
                 compararBancos(linha.getBanco(), dadosPdf.getBanco())));
 
-        verificacoes.add(criarVerificacao(
+        VerificacaoResponse valor = criarVerificacao(
                 "Valor",
                 valorEncontrado != null ? valorEncontrado.toString() : "Não encontrado",
                 linha.getValor().toString(),
                 valorOk
-        ));
+        );
+
+        if (!valorOk) {
+            if (valorEncontrado != null && linha.getValor() != null) {
+                BigDecimal diferenca = valorEncontrado.subtract(linha.getValor()).abs();
+
+                valor.setMensagem(String.format("Divergência de R$ %.2f.",
+                        diferenca));
+            }else{
+                valor.setMensagem("Valor não encontrado.");
+            }
+        } else {
+            valor.setMensagem("Sem divergências.");
+        }
+
+        verificacoes.add(valor);
 
         VerificacaoResponse vencimento = criarVerificacao(
                 "Vencimento",
