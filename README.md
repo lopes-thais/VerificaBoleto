@@ -10,7 +10,6 @@ pelo usuário e os dados extraídos do documento.
 ![JUnit 5](https://img.shields.io/badge/JUnit_5_Tests-25A162?style=for-the-badge&logo=junit5&logoColor=white)
 ![SLF4J Logging](https://img.shields.io/badge/SLF4J_Logging-00599C?style=for-the-badge&logo=logstash&logoColor=white)
 ![Gemini API](https://img.shields.io/badge/Google_Gemini_AI-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
-![AI Agent](https://img.shields.io/badge/Agente_de_IA-Active-blueviolet?style=for-the-badge&logo=openai&logoColor=white)
 ## O problema
 
 Segundo dados do [G1](https://g1.globo.com/politica/noticia/2025/08/14/golpe-pix-boleto-falso-datafolha-fbsp.ghtml), entre 2024 e 2025 cerca de 24 milhões de pessoas foram vítima de golpes envolvendo boletos bancários ou pix. 
@@ -71,7 +70,6 @@ Além disso, são apresentados os campos divergentes identificados durante a an�
 * Verificação de boletos por meio da linha digitável;
 * Validação da linha a partir dos módulos 10 e 11;
 * Extração de código de barras de 44 dígitos a partir da linha digitável;
-* Upload e extração automática de informações de boletos em PDF;
 * Extração de data de vencimento, banco e valor do boleto a partir da linha digitável;
 * Exibição dinâmica dos resultados da análise;
 * Comparação visual entre dados informados e dados extraídos;
@@ -185,25 +183,25 @@ Response body
 }
 ````
 
-## Agente de IA (Gemini)
+## Módulo de IA (Gemini)
 
 Uma das maiores dificuldades da verificação de boletos em PDF era encontrar corretamente a data de vencimento e o valor do documento corretamente, 
 pois as instituições financeiras muitas vezes informam esses dados de forma diferente entre si. Por exemplo, uma pode colocar como "Vencimento" e outra como "Pagar até".
 
 Para cobrir essas diferenças seria necessário um parser com muitos padrões cadastrados, o que demandaria muito código e tempo e ainda assim não cobriria todos os casos.
-Pensando em facilitar essa parte da verificação, desenvolvi um agente de IA através da API do Gemini.
+Pensando em facilitar essa parte da verificação, desenvolvi um módulo de IA através da API do Gemini.
 
 Além disso, uma das minhas preocupações foi o envio de dados sensíveis do usuário que poderiam estar presentes no PDF do boleto.
 
 Para evitar isso, criei um extrator de trechos, que através do regex encontra padrões de data e valores monetários e extrai somente 15 caracteres antes e depois dos padrões. 
 
-Enviando assim, somente os dados extritamente necessários para encontrar o valor e o vencimento do boleto.
+Enviando assim, somente os dados estritamente necessários para encontrar o valor e o vencimento do boleto.
 
 Por fim, caso o Agente esteja indisponível, o sistema faz um FallBack para o parser do sistema extrair as datas e valores e armazenar em uma lista para comparação.
 
-Você pode saber mais sobre o Agente de IA aqui:
+Você pode saber mais sobre o Módulo de IA aqui:
 
-[Agente de IA do VerificaBoleto](https://github.com/lopes-thais/VerificaBoleto/tree/feature/agente-ia-pdf)
+[Módulo de IA do VerificaBoleto](https://github.com/lopes-thais/VerificaBoleto/tree/feature/agente-ia-pdf)
 
 ## Suíte de Testes Unitários
 
@@ -275,14 +273,14 @@ pela interação com o usuário.
 VerificaBoleto/
 ├── src/main/java/com/thais/verificaBoleto/
 │   ├──agentePdf
-│   ├── dto/
-│   │   ├──AgenteRequest
-│   │   └──AgenteResponse
-│   ├── parser/
-│   │   └──ExtracaoTrechos
-│   ├── service/
-│   │   └──AgenteService
-│   │└──GeminiClient   
+│   │   ├── dto/
+│   │   │   ├──AgenteRequest
+│   │   │   └──AgenteResponse
+│   │   ├──parser/
+│   │   │   └──ExtracaoTrechos
+│   │   ├──service/
+│   │   │   └──AgenteService
+│   │   └──GeminiClient   
 │   ├── config/
 │   │   └── OpenApiConfig
 │   ├── controller/
@@ -346,11 +344,8 @@ O verificaBoleto não verifica ou valida:
 - Implementação de logging estruturado com `SLF4J` nos serviços principais (`BoletoService`, `PdfService`).
 
 ## Melhorias Futuras
-
-- Verificação de contas de concessionária (linha digitável com 48 dígitos).
-- Implementação de um parser mais robusto para identificar, na String
-  extraída do PDF, os valores associados aos campos "Vencimento" e
-  "Valor", reduzindo a dependência de listas genéricas de valores e datas e evitar dependência do Agente de IA.
+- Implementação de métricas e monitoramento de requisições;
+- Aprimorar o parser nativo como contingência (fallback) para cenários onde a API de IA não responda.
 
 ## Organização 
 A organização do desenvolvimento do projeto foi feita a partir de KanBan no GitHub Projects, foram listados os requisitos
