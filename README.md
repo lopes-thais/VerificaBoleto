@@ -1,4 +1,4 @@
-# VerificaBoleto — Módulo Agente de IA (Gemini)
+# VerificaBoleto — Módulo de IA (Gemini)
 
 Módulo especializado em inteligência artificial do sistema **VerificaBoleto**. Esta branch é responsável pela extração inteligente, análise contextual de dados financeiros e redução do envio de dados sensíveis ao consumir a API do **Google Gemini**.
 
@@ -21,7 +21,7 @@ Uma das maiores dificuldades ao validar boletos em formato PDF é a inconsistên
 
 Criar um *parser* estático via código ou *regex* para cobrir todas as variações existentes exigiria milhares de regras, aumentando a complexidade e a manutenção da aplicação.
 
-## O Agente de IA
+## O Módulo de IA
 
 Para resolver a variabilidade dos boletos sem inflar a base de código, desenvolvi o `AgenteService`. Ele integra a API do **Google Gemini** para realizar a interpretação semântica do documento e extrair com precisão a **Data de Vencimento** e o **Valor do Boleto**.
 
@@ -31,7 +31,7 @@ Enviar o PDF completo ou todo o texto bruto do boleto para APIs externas de IA p
 Para contornar essa vulnerabilidade, o sistema implementa a estratégia de **Janela de Contexto**:
 1. O texto do PDF é extraído localmente via **Apache PDFBox**.
 2. A classe **ExtracaoTrechos** aplica *Regex* para identificar trechos que contêm padrões numéricos e de datas.
-3. É criada uma **janela de contexto de 20 caracteres antes e depois** de cada valor/data encontrado.
+3. É criada uma **janela de contexto de 25 caracteres antes** de cada valor/data encontrado.
 4. **Apenas essa janela limitada de texto** é enviada no *prompt* para o Gemini, garantindo a privacidade dos dados do usuário.
 
 ---
@@ -72,15 +72,15 @@ gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models/gemini-3.
 ```text
 VerificaBoleto/
 └── src/main/java/com/thais/verificaBoleto/
-    │   ├──agentePdf
-    │   ├── dto/
-    │   │   ├──AgenteRequest
-    │   │   └──AgenteResponse
-    │   ├── parser/
-    │   │   └──ExtracaoTrechos
-    │   ├── service/
-    │   │   └──AgenteService
-    └──GeminiClient 
+    └── agentePdf/
+        ├── dto/
+        │   ├── AgenteRequest.java
+        │   └── AgenteResponse.java
+        ├── parser/
+        │   └── ExtracaoTrechos.java
+        ├── service/
+        │   └── AgenteService.java
+        └── GeminiClient.java
 
 ```
 
