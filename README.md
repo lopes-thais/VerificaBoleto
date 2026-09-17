@@ -3,7 +3,7 @@
 Módulo especializado em inteligência artificial do sistema **VerificaBoleto**. Esta branch é responsável pela extração inteligente, análise contextual de dados financeiros e redução do envio de dados sensíveis ao consumir a API do **Google Gemini**.
 
 ![Java](https://img.shields.io/badge/Java_21-red?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/SPRING_BOOT_3.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/SPRING_BOOT_4.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google_Gemini_AI-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
 ![PDFBox](https://img.shields.io/badge/Apache_PDFBox-CC292B?style=for-the-badge&logo=apache&logoColor=white)
 
