@@ -201,7 +201,7 @@ Por fim, caso o Agente esteja indisponível, o sistema faz um FallBack para o pa
 
 Você pode saber mais sobre o Módulo de IA aqui:
 
-[Módulo de IA do VerificaBoleto](https://github.com/lopes-thais/VerificaBoleto/tree/feature/agente-ia-pdf)
+[Módulo de IA do VerificaBoleto](https://github.com/lopes-thais/VerificaBoleto/tree/feature/modulo-ia-pdf)
 
 ## Suíte de Testes Unitários
 
